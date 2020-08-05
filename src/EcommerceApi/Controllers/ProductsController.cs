@@ -1,4 +1,5 @@
-﻿using EcommerceApi.Models;
+﻿using EcommerceApi.Infra;
+using EcommerceApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,25 +11,23 @@ namespace EcommerceApi.Controllers
     [Route ("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        public List<Product> _produtcs = new List<Product>
+        private readonly EcommerceDbContext _ecommerceDbContext;
+        public ProductsController(EcommerceDbContext ecommerceDbContext)
         {
-            new Product(1, "nootebook", 2200),
-            new Product(2, "mouse", 200),
-            new Product(3, "teclado", 150)
-        };
+            _ecommerceDbContext = ecommerceDbContext;
+        }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_produtcs);
+            var products = _ecommerceDbContext.Products.ToList();
+            return Ok(products);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            //SingleOrDefault - 
-            //FirstOrDefault - primeiro item
-            var product = _produtcs.SingleOrDefault(p => p.Id == id);
+            var product = _ecommerceDbContext.Products.SingleOrDefault(p => p.Id == id);
             if (product == null) 
             {
                 return NotFound();
